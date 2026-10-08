@@ -10,7 +10,7 @@ spec:
   name: aap_controller
   owner: app
   cluster:
-    name: shared-pg
+    name: aap-cc-pg
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
@@ -24,7 +24,7 @@ spec:
   name: aap_hub
   owner: app
   cluster:
-    name: shared-pg
+    name: aap-cc-pg
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
@@ -38,7 +38,7 @@ spec:
   name: aap_eda
   owner: app
   cluster:
-    name: shared-pg
+    name: aap-cc-pg
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
@@ -52,4 +52,4 @@ spec:
   name: aap_gateway
   owner: app
   cluster:
-    name: shared-pg
+    name: aap-cc-pg
