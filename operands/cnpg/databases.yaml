@@ -1,0 +1,55 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: aap-controller
+  namespace: shared-postgresql
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  name: aap_controller
+  owner: app
+  cluster:
+    name: shared-pg
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: aap-hub
+  namespace: shared-postgresql
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  name: aap_hub
+  owner: app
+  cluster:
+    name: shared-pg
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: aap-eda
+  namespace: shared-postgresql
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  name: aap_eda
+  owner: app
+  cluster:
+    name: shared-pg
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: aap-gateway
+  namespace: shared-postgresql
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  name: aap_gateway
+  owner: app
+  cluster:
+    name: shared-pg
