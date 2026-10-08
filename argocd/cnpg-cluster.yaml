@@ -11,7 +11,7 @@ spec:
     path: operands/cnpg
   destination:
     server: https://kubernetes.default.svc
-    namespace: shared-postgresql
+    namespace: aap-cc
   syncPolicy:
     automated:
       prune: true

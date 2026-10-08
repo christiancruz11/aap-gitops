@@ -2,7 +2,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: aap-controller
-  namespace: shared-postgresql
+  namespace: aap-cc
   annotations:
     argocd.argoproj.io/sync-wave: "15"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
@@ -16,7 +16,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: aap-hub
-  namespace: shared-postgresql
+  namespace: aap-cc
   annotations:
     argocd.argoproj.io/sync-wave: "15"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
@@ -30,7 +30,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: aap-eda
-  namespace: shared-postgresql
+  namespace: aap-cc
   annotations:
     argocd.argoproj.io/sync-wave: "15"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
@@ -44,7 +44,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: aap-gateway
-  namespace: shared-postgresql
+  namespace: aap-cc
   annotations:
     argocd.argoproj.io/sync-wave: "15"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
