@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aap-cc-platform
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/christiancruz11/aap-gitops.git
+    targetRevision: main
+    path: operands/aap-cc
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: aap-cc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
+    syncOptions:
+      - ServerSideApply=true
