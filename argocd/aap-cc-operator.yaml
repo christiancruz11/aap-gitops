@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://REPLACE_WITH_YOUR_REPO_URL.git
+    repoURL: https://github.com/christiancruz11/aap-gitops.git
     targetRevision: main
     path: operators/aap-cc
   destination:
