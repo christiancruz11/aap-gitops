@@ -1,11 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# ============================================================
-#  Must match NAMESPACE in site-config.yaml
-# ============================================================
-namespace: aap-cc
-
 resources:
   - site-config.yaml
   - ../base/operator
@@ -32,7 +27,7 @@ patches:
 #  (no need to edit below, values come from site-config.yaml)
 # ============================================================
 replacements:
-  # -- Namespace name + OperatorGroup target --
+  # -- Namespace: sets metadata.name, metadata.namespace, and OperatorGroup target --
   - source:
       kind: ConfigMap
       name: site-config
@@ -42,6 +37,13 @@ replacements:
           kind: Namespace
         fieldPaths:
           - metadata.name
+      - select: {}
+        reject:
+          - kind: Namespace
+        fieldPaths:
+          - metadata.namespace
+        options:
+          create: true
       - select:
           kind: OperatorGroup
         fieldPaths:
