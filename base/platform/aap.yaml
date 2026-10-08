@@ -1,25 +1,24 @@
 apiVersion: aap.ansible.com/v1alpha1
 kind: AnsibleAutomationPlatform
 metadata:
-  name: aap-cc
-  namespace: aap-cc
+  name: CHANGEME
   annotations:
     argocd.argoproj.io/sync-wave: "20"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   controller:
     disabled: false
-    postgres_configuration_secret: aap-cc-controller-postgres-configuration
+    postgres_configuration_secret: controller-postgres-configuration
   eda:
     disabled: false
-    postgres_configuration_secret: aap-cc-eda-postgres-configuration
+    postgres_configuration_secret: eda-postgres-configuration
   hub:
     disabled: false
-    file_storage_storage_class: ocs-storagecluster-cephfs
-    postgres_configuration_secret: aap-cc-hub-postgres-configuration
+    file_storage_storage_class: CHANGEME
+    postgres_configuration_secret: hub-postgres-configuration
   lightspeed:
     disabled: true
   no_log: true
   redis_mode: standalone
   route_tls_termination_mechanism: Edge
-  postgres_configuration_secret: aap-cc-gateway-postgres-configuration
+  postgres_configuration_secret: gateway-postgres-configuration

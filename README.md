@@ -1,156 +1,104 @@
-# AAP GitOps — aap-cc
+# AAP GitOps
 
-Deploy Ansible Automation Platform 2.7 on OpenShift using ArgoCD GitOps with an external CloudNativePG (CNPG) PostgreSQL database.
+Deploy Ansible Automation Platform on OpenShift using ArgoCD GitOps with an external CloudNativePG PostgreSQL database.
 
-## Overview
+**Fork this repo, edit one file, deploy.**
 
-This repo deploys a fully GitOps-managed AAP 2.7 instance named **aap-cc** with:
+## Quick Start
 
-- **Automation Controller** — job engine for running playbooks
-- **Automation Hub** — private collection/EE registry
-- **Event-Driven Ansible (EDA)** — event-based automation triggers
-- **AAP Gateway** — unified entry point for all components
-- **External PostgreSQL** — dedicated CNPG cluster (`aap-cc-pg`) with separate databases per component
+### 1. Fork and configure
+
+Fork this repo, then edit `site/site-config.yaml` with your values:
+
+```yaml
+data:
+  NAMESPACE: aap-cc                              # your namespace
+  INSTANCE_NAME: aap-cc                          # AAP CR name
+  PG_CLUSTER_NAME: aap-cc-pg                     # Postgres cluster name
+  AAP_CHANNEL: stable-2.7                        # operator channel
+  HUB_STORAGE_CLASS: ocs-storagecluster-cephfs   # RWX storage class for Hub
+```
+
+Also update `namespace:` in `site/kustomization.yaml` to match your `NAMESPACE`.
+
+Update `repoURL:` in `argocd/app.yaml` to point to your fork.
+
+### 2. Deploy the ArgoCD Application
+
+```bash
+oc apply -f argocd/app.yaml
+```
+
+ArgoCD uses sync waves to deploy in order:
+- **Wave 0** — Namespace, OperatorGroup, Subscription (AAP operator)
+- **Wave 14** — CNPG Postgres cluster
+- **Wave 15** — Postgres databases
+- **Wave 20** — AnsibleAutomationPlatform CR
+
+### 3. Create the database secrets
+
+Once the Postgres cluster is healthy, get the password:
+
+```bash
+oc get secret <PG_CLUSTER_NAME>-superuser -n <NAMESPACE> \
+  -o jsonpath='{.data.password}' | base64 -d
+```
+
+Copy and edit the template:
+
+```bash
+cp site/postgres-secrets.yaml.template /tmp/postgres-secrets.yaml
+# Replace CHANGEME_NAMESPACE, CHANGEME_PG_CLUSTER, CHANGEME_PASSWORD
+oc apply -f /tmp/postgres-secrets.yaml
+rm /tmp/postgres-secrets.yaml
+```
+
+### 4. Verify
+
+```bash
+oc get pods -n <NAMESPACE>
+oc get route -n <NAMESPACE> | grep gateway
+oc get secret <INSTANCE_NAME>-admin-password -n <NAMESPACE> \
+  -o jsonpath='{.data.password}' | base64 -d
+```
 
 ## Prerequisites
 
 - OpenShift cluster with:
   - **OpenShift GitOps (ArgoCD)** installed
-  - **CloudNativePG operator** installed (in `cnpg-system`)
-  - **OpenShift Data Foundation (ODF)** or a default StorageClass available
+  - **CloudNativePG operator** installed
+  - A default StorageClass (or ODF)
 - `oc` CLI authenticated to the cluster
 
 ## Repo Structure
 
 ```
 aap-gitops/
-├── argocd/                          # ArgoCD Application manifests
-│   ├── aap-cc-operator.yaml        #   AAP operator subscription
-│   ├── aap-cc-platform.yaml        #   AAP platform CR (Controller, Hub, EDA, Gateway)
-│   └── cnpg-cluster.yaml           #   CNPG Postgres cluster + databases
-├── operators/
-│   └── aap-cc/                      # AAP operator installation
-│       ├── namespace.yaml           #   aap-cc namespace
-│       ├── operatorgroup.yaml       #   Scoped to aap-cc only
-│       ├── subscription.yaml        #   stable-2.7 channel
-│       └── kustomization.yaml
-└── operands/
-    ├── aap-cc/                      # AAP platform
-    │   ├── aap.yaml                 #   AnsibleAutomationPlatform CR
-    │   ├── postgres-secrets.yaml.template  # DB connection secrets (template)
-    │   └── kustomization.yaml
-    └── cnpg/                        # PostgreSQL
-        ├── cluster.yaml             #   2-instance PG16 cluster (aap-cc-pg)
-        ├── databases.yaml           #   4 databases: controller, hub, eda, gateway
-        └── kustomization.yaml
+├── base/                              # Generic manifests — don't edit
+│   ├── operator/                      #   Namespace, OperatorGroup, Subscription
+│   ├── cnpg/                          #   CNPG Cluster + Databases
+│   └── platform/                      #   AnsibleAutomationPlatform CR
+├── site/                              # Your configuration
+│   ├── site-config.yaml               #   ← THE VARS FILE (edit this)
+│   ├── kustomization.yaml             #   Wiring + numeric values
+│   └── postgres-secrets.yaml.template #   DB secrets (apply manually)
+└── argocd/
+    └── app.yaml                       # Bootstrap ArgoCD Application
 ```
 
-## Deployment Steps
+## What gets deployed
 
-### Step 1 — Install the AAP Operator
-
-```bash
-oc apply -f argocd/aap-cc-operator.yaml
-```
-
-Wait for the operator to install (~2–3 minutes):
-
-```bash
-oc get csv -n aap-cc -w
-```
-
-Look for `Succeeded` in the PHASE column for the AAP operator.
-
-### Step 2 — Deploy the PostgreSQL Cluster
-
-```bash
-oc apply -f argocd/cnpg-cluster.yaml
-```
-
-Wait for the Postgres cluster to become healthy (~1–2 minutes):
-
-```bash
-oc get cluster.postgresql.cnpg.io -n aap-cc -w
-```
-
-Look for `Cluster in healthy state` in the STATUS column.
-
-### Step 3 — Create the Database Connection Secrets
-
-Get the CNPG-generated password:
-
-```bash
-oc get secret aap-cc-pg-superuser -n aap-cc \
-  -o jsonpath='{.data.password}' | base64 -d
-```
-
-Copy the template and fill in the real password:
-
-```bash
-cp operands/aap-cc/postgres-secrets.yaml.template /tmp/postgres-secrets.yaml
-```
-
-Edit `/tmp/postgres-secrets.yaml` and replace all `CHANGEME` values with the password from above.
-
-Apply the secrets:
-
-```bash
-oc apply -f /tmp/postgres-secrets.yaml
-```
-
-Clean up:
-
-```bash
-rm /tmp/postgres-secrets.yaml
-```
-
-### Step 4 — Deploy the AAP Platform
-
-```bash
-oc apply -f argocd/aap-cc-platform.yaml
-```
-
-This deploys the `AnsibleAutomationPlatform` CR which creates Controller, Hub, EDA, and Gateway. The operator will take ~5–10 minutes to fully reconcile.
-
-Monitor progress:
-
-```bash
-oc get aap -n aap-cc -w
-```
-
-### Step 5 — Verify
-
-Check all pods are running:
-
-```bash
-oc get pods -n aap-cc
-```
-
-Get the AAP URL:
-
-```bash
-oc get route -n aap-cc | grep gateway
-```
-
-Get the admin password:
-
-```bash
-oc get secret aap-cc-admin-password -n aap-cc \
-  -o jsonpath='{.data.password}' | base64 -d
-```
-
-Login with username `admin` and the password above.
-
-## Namespaces
-
-| Namespace | Contents |
+| Component | Description |
 |---|---|
-| `aap-cc` | AAP operator, all AAP components, CNPG Postgres cluster |
-| `cnpg-system` | CNPG operator (shared, already exists on cluster) |
-| `openshift-gitops` | ArgoCD Applications |
+| AAP Operator | OLM subscription on your chosen channel |
+| CNPG Postgres | Dedicated PostgreSQL cluster with 4 databases |
+| Automation Controller | Playbook engine |
+| Automation Hub | Collection/EE registry |
+| Event-Driven Ansible | Event-based automation |
+| AAP Gateway | Unified entry point |
 
 ## Notes
 
-- **Secrets are NOT stored in Git.** The `postgres-secrets.yaml.template` file is a template only. For production, consider using [SOPS](https://github.com/getsops/sops) or [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets).
-- **Storage:** Postgres uses the cluster default StorageClass (`ocs-storagecluster-ceph-rbd`). Hub file storage uses `ocs-storagecluster-cephfs`.
-- **Coexistence:** This deployment is fully independent from the existing AAP in the `aap` namespace. The OperatorGroup scopes the AAP operator to `aap-cc` only.
+- **Secrets are NOT stored in Git.** Use the template to create them manually, or adopt [SOPS](https://github.com/getsops/sops) / [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets).
+- **Postgres sizing** (instances, storage) is configured in `site/kustomization.yaml` under `patches`.
+- **Coexistence** — multiple AAP instances can run on the same cluster in different namespaces.

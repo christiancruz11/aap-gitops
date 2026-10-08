@@ -1,0 +1,26 @@
+# ============================================================
+#  SITE CONFIGURATION
+#  Edit the values below for your environment.
+#  This is the ONLY file you need to change.
+# ============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: site-config
+  annotations:
+    config.kubernetes.io/local-config: "true"   # not deployed to cluster
+data:
+  # -- Target namespace for all resources --
+  NAMESPACE: aap-cc
+
+  # -- AAP instance name --
+  INSTANCE_NAME: aap-cc
+
+  # -- PostgreSQL cluster name --
+  PG_CLUSTER_NAME: aap-cc-pg
+
+  # -- AAP operator channel (e.g. stable-2.5, stable-2.7) --
+  AAP_CHANNEL: stable-2.7
+
+  # -- Storage class for Automation Hub file storage (must support RWX) --
+  HUB_STORAGE_CLASS: ocs-storagecluster-cephfs
