@@ -3,7 +3,7 @@ kind: Subscription
 metadata:
   name: ansible-automation-platform-operator
 spec:
-  channel: CHANGEME
+  channel: __replaced_by_site_config__
   installPlanApproval: Automatic
   name: ansible-automation-platform-operator
   source: redhat-operators

@@ -9,7 +9,7 @@ spec:
   name: aap_controller
   owner: app
   cluster:
-    name: CHANGEME
+    name: __replaced_by_site_config__
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
@@ -22,7 +22,7 @@ spec:
   name: aap_hub
   owner: app
   cluster:
-    name: CHANGEME
+    name: __replaced_by_site_config__
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
@@ -35,7 +35,7 @@ spec:
   name: aap_eda
   owner: app
   cluster:
-    name: CHANGEME
+    name: __replaced_by_site_config__
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
@@ -48,4 +48,4 @@ spec:
   name: aap_gateway
   owner: app
   cluster:
-    name: CHANGEME
+    name: __replaced_by_site_config__

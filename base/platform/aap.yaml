@@ -1,7 +1,7 @@
 apiVersion: aap.ansible.com/v1alpha1
 kind: AnsibleAutomationPlatform
 metadata:
-  name: CHANGEME
+  name: __replaced_by_site_config__
   annotations:
     argocd.argoproj.io/sync-wave: "20"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
@@ -14,7 +14,7 @@ spec:
     postgres_configuration_secret: eda-postgres-configuration
   hub:
     disabled: false
-    file_storage_storage_class: CHANGEME
+    file_storage_storage_class: __replaced_by_site_config__
     postgres_configuration_secret: hub-postgres-configuration
   lightspeed:
     disabled: true

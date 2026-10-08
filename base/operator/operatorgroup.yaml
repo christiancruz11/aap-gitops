@@ -4,4 +4,4 @@ metadata:
   name: aap-operator-group
 spec:
   targetNamespaces:
-    - CHANGEME
+    - __replaced_by_site_config__
