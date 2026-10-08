@@ -1,0 +1,9 @@
+# Secrets - never commit
+**/secret*.yaml
+**/secret*.yml
+**/*-secret.yaml
+**/*-secret.yml
+
+# OS files
+.DS_Store
+Thumbs.db

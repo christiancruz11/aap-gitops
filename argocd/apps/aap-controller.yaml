@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aap-controller
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: https://REPLACE_WITH_YOUR_REPO_URL.git
+    targetRevision: main
+    path: components/controller/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: aap
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
