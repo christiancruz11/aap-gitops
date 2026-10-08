@@ -5,6 +5,7 @@ resources:
   - site-config.yaml
   - ../base/operator
   - ../base/cnpg
+  - ../base/secrets
   - ../base/platform
 
 # ============================================================
@@ -33,6 +34,10 @@ replacements:
           kind: OperatorGroup
         fieldPaths:
           - spec.targetNamespaces.0
+      - select:
+          kind: SecretStore
+        fieldPaths:
+          - spec.provider.kubernetes.remoteNamespace
 
   # -- AAP instance name --
   - source:
@@ -107,3 +112,26 @@ replacements:
           kind: AnsibleAutomationPlatform
         fieldPaths:
           - spec.hub.file_storage_storage_class
+
+  # -- Postgres service host --
+  - source:
+      kind: ConfigMap
+      name: site-config
+      fieldPath: data.PG_HOST
+    targets:
+      - select:
+          kind: ExternalSecret
+        fieldPaths:
+          - spec.target.template.data.host
+
+  # -- CNPG app secret name (auto-created by CNPG) --
+  - source:
+      kind: ConfigMap
+      name: site-config
+      fieldPath: data.PG_APP_SECRET
+    targets:
+      - select:
+          kind: ExternalSecret
+        fieldPaths:
+          - spec.data.0.remoteRef.key
+          - spec.data.1.remoteRef.key

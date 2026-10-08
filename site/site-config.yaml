@@ -30,3 +30,9 @@ data:
 
   # -- Storage class for Automation Hub file storage (must support RWX) --
   HUB_STORAGE_CLASS: ocs-storagecluster-cephfs
+
+  # -- PostgreSQL service hostname: {PG_CLUSTER_NAME}-rw.{NAMESPACE}.svc --
+  PG_HOST: aap-cc-pg-rw.aap-cc.svc
+
+  # -- CNPG app user secret name: {PG_CLUSTER_NAME}-app --
+  PG_APP_SECRET: aap-cc-pg-app
