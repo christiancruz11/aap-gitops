@@ -1,0 +1,8 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: aap-cc-operator-group
+  namespace: aap-cc
+spec:
+  targetNamespaces:
+    - aap-cc
