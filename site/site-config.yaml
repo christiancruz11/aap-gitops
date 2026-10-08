@@ -22,5 +22,11 @@ data:
   # -- AAP operator channel (e.g. stable-2.5, stable-2.7) --
   AAP_CHANNEL: stable-2.7
 
+  # -- PostgreSQL replicas --
+  PG_INSTANCES: "2"
+
+  # -- PostgreSQL storage size --
+  PG_STORAGE_SIZE: "50Gi"
+
   # -- Storage class for Automation Hub file storage (must support RWX) --
   HUB_STORAGE_CLASS: ocs-storagecluster-cephfs
