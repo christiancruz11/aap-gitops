@@ -5,7 +5,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aap-gitops
+  name: aap-cc
   namespace: openshift-gitops
 spec:
   project: default
